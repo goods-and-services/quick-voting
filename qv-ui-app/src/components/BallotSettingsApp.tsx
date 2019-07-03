@@ -9,12 +9,12 @@ export default class BallotSettingsApp extends React.Component {
         }
     }
     
-
     render() {
 
         const menuOffset = .3;
         let menuStyle = {
             backgroundColor: 'white',
+            opacity: .9,
             marginLeft: window.innerWidth * menuOffset,
             marginRight: window.innerWidth * menuOffset,
             textAlign: 'center',
