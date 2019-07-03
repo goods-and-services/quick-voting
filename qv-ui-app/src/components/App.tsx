@@ -2,6 +2,7 @@ import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 import './bootstrap.min.css';
+import BallotSettingsApp from './BallotSettingsApp';
 
 function Title() {
   
@@ -30,7 +31,7 @@ function Title() {
 function App() {
 
   let containerStyle = {
-    marginTop: window.innerHeight * .2,
+    marginTop: window.innerHeight * .15,
   } as React.CSSProperties;
 
   return (
@@ -38,6 +39,9 @@ function App() {
     <div className = 'container-fluid' style = {containerStyle}>
       <div className = 'row'>
         <Title/>
+      </div>
+      <div className = 'row'>
+        <BallotSettingsApp/>
       </div>
     </div>
     
