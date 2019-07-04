@@ -1,0 +1,10 @@
+version: '2'
+services:
+  qv-web-app:
+    restart: always
+    build:
+      dockerfile: Dockerfile
+      context: .
+    environment:
+      - VIRTUAL_HOST=quick.voting
+      - LETSENCRYPT_HOST=quick.voting

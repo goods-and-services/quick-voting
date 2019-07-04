@@ -1,0 +1,2 @@
+# deploy the Nginx reverse proxy like this:
+$ docker-compose -f nginx-proxy-compose.yaml up -d
