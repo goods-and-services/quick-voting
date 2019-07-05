@@ -40,9 +40,7 @@ function App() {
       <div className = 'row'>
         <Title/>
       </div>
-      <div className = 'row'>
         <BallotSettingsApp/>
-      </div>
     </div>
     
   );
