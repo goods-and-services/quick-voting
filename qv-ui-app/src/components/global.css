@@ -1,0 +1,35 @@
+
+.menu-button{
+    border-radius: 10px;
+    border-width: 2px;
+    border-style: solid;
+    box-shadow: none;
+    background-color: white;
+}
+
+.menu-style {
+    background-color: white;
+    opacity: .9;
+    text-align: center;
+    margin-top: 10px;
+    border-style: solid;
+    border-radius: 10px;
+    border-width: 1px;
+} 
+.global-text-style-sm {
+    text-Align: center;
+    font-size: 14px;
+    font-family: Roboto;
+}
+
+.global-text-style-md {
+    text-Align: center;
+    font-size: 24px;
+    font-family: Roboto;
+}
+
+.global-text-style-lg {
+    text-Align: center;
+    font-size: 40px;
+    font-family: Roboto;
+}
