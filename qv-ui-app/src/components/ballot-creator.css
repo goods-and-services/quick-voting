@@ -1,0 +1,45 @@
+.ballot-text-style-sm {
+    text-Align: left;
+    font-size: 14px;
+    font-family: Roboto;
+}
+
+.ballot-text-style-md {
+    text-Align: left;
+    font-size: 24px;
+    font-family: Roboto;
+}
+
+.ballot-text-style-lg {
+    text-Align: left;
+    font-size: 30px;
+    font-family: Roboto;
+}
+
+.ballot-text-style-xl {
+    text-Align: left;
+    font-size: 100px;
+    font-family: Roboto;
+}
+
+.ballot-elem {
+    min-height: 20vh;
+    border-bottom: 5px solid black;
+}
+
+.inline-block {
+    display: inline-block;
+    border: 2px solid black;
+}
+
+.question-text-box {
+    width: 100%;
+}
+
+.center-text {
+    text-align: center;
+}
+
+.all-height {
+    min-height: 100vh;
+}

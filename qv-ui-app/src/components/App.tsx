@@ -2,7 +2,7 @@ import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 import './bootstrap.min.css';
-import VoteTemplate from './BallotCreator';
+import BallotTemplate from './BallotCreator';
 import BallotSettingsApp from './BallotSettingsApp';
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 
@@ -56,7 +56,7 @@ function App() {
       <div>
         <Switch>
           <Route exact path="/" component={MainMenu} />
-          <Route path='/qv'  component={VoteTemplate}/ >
+          <Route path='/qv'  component={BallotTemplate}/>
           <Route component={NoMatch}/>
         </Switch>
       </div>
