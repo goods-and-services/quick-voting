@@ -6,5 +6,5 @@ services:
       dockerfile: Dockerfile
       context: .
     environment:
-      - VIRTUAL_HOST=qv.run
-      - LETSENCRYPT_HOST=qv.run
+      - VIRTUAL_HOST=quadratic.voting
+      - LETSENCRYPT_HOST=quadratic.voting

@@ -1,0 +1,1 @@
+docker-compose -f qv-web-app/nginx-proxy-compose.yaml up -d
