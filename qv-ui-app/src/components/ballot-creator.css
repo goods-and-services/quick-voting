@@ -23,9 +23,10 @@
 }
 
 .ballot-elem {
-    min-height: 20vh;
+    min-height: 30vh;
     border-bottom: 5px solid black;
 }
+
 
 .inline-block {
     display: inline-block;
@@ -38,6 +39,10 @@
 
 .center-text {
     text-align: center;
+}
+
+.left-text {
+    text-align: left;
 }
 
 .all-height {

@@ -3,52 +3,129 @@ import './bootstrap.min.css';
 import './global.css';
 import './ballot-creator.css';
 
-import { faPlusCircle, faChevronRight, faTimesCircle} from '@fortawesome/free-solid-svg-icons'
+import TextInput from './TextInput';
+import { faPlusCircle, faTimesCircle} from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { element } from 'prop-types';
 
 
 //TODO make this page not work if all query parameters aren't set correctly
 
 interface question {
     questionId: number,
-    text: String,
+    text: string,
 }
 
 interface option {
     optionId: number,
-    text: String
+    text: string
 }
 
 
 
 class QuestionBox extends React.Component<{question?: question, questionOptions?: Array<option>,
                                              questionAdded?: () => void
-                                             questionTextChanged?: (txt: string) => void}, {hovered: boolean}> {
+                                             questionTextChanged?: (txt: string) => void
+                                             optionAdded?: (qId: number) => void
+                                             optionChanged?: (optionId: number, txt: string) => void}> {
+
 
     constructor(props: any) {
         super(props);
-        this.state = {
-            hovered: false   
-        }  
         this.RenderExistingBox = this.RenderExistingBox.bind(this);
-        this.handleChange = this.handleChange.bind(this);
-
+        this.RenderOption = this.RenderOption.bind(this);
     }
 
-    public handleChange(event: any) {
-        //@ts-ignore
-        this.props.questionTextChanged(event.target.value);
+
+    public organizeComponents(rangeArr: Array<undefined>, optionsCopy: Array<option>) {
+        let res = [];
+        for (let idx = 0; idx < rangeArr.length; idx+=2){
+            res.push(
+                
+                <div className = 'row'>
+                
+                    <this.RenderOption option = {
+                        idx < optionsCopy.length?
+                        optionsCopy[idx]: undefined
+                        }/>
+                    
+                
+                    <this.RenderOption option = {
+                        (idx+1) < optionsCopy.length?
+                        optionsCopy[(idx+1)]: undefined
+                        }/>
+                </div>
+                
+            )
+        }
+        return res;
+    }
+
+
+    public RenderOption(props: {option?: option}){
+
+        let handleChange = (event: any) => {
+            // @ts-ignore
+            this.props.optionTextChanged(this.option.optionId, event.target.value);
+        }
+
+
+        return (
+            <div className = 'col'>
+                <div className = 'option-box'>
+                {
+                    props.option? 
+                        <TextInput id = {props.option.optionId.toString()}
+                        value={props.option.text}
+                        onChange= {handleChange} 
+                        //@ts-ignore
+                        label = {"Option Text"} />
+                    : <div className = 'ballot-text-style-md left-text'
+                        //@ts-ignore
+                        onClick = {() => this.props.optionAdded(this.props.question.questionId)}>
+                        <FontAwesomeIcon icon={faPlusCircle}/>
+                </div>
+                }
+                </div>
+            </div>
+        )
     }
 
     public RenderExistingBox() {
+
+        let handleChange = (event: any) => {
+            //@ts-ignore
+            this.props.questionTextChanged(event.target.value);
+        }
+
+        //@ts-ignore
+        let optionsCopy = [...this.props.questionOptions];
+        let numOptions = optionsCopy.length;
+        let rangeArr = (numOptions % 2 == 0)? [...Array(numOptions + 2)]:
+                    [...Array(numOptions + 1)]
+
+        let optionColumns = this.organizeComponents(rangeArr, optionsCopy);
+
         return (
             <div className = 'ballot-text-style-md'>
                 <div className = 'row'>
                     <div className = 'col'>
-                        <input className = 'question-text-box' type="text" value={this.props.question? this.props.question.text.toString(): ''} 
-                                            onChange={this.handleChange} />
+                    {
+                        //@ts-ignore
+                        <TextInput id = {this.props.question.questionId.toString()}
+                                    value={this.props.question? this.props.question.text.toString(): ''}
+                                    onChange= {handleChange} 
+                                    //@ts-ignore
+                                    label = {"Topic Text"} />
+                    }
                     </div>
                 </div>
+                {
+                    optionColumns.map((elem) => {
+                        return elem;
+                    })
+                }
+                
             </div>
         ) 
     }
@@ -65,6 +142,7 @@ class QuestionBox extends React.Component<{question?: question, questionOptions?
                                     // @ts-ignore
                                     onClick = {() => this.props.questionAdded()}>
                                     <FontAwesomeIcon icon={faPlusCircle}/>
+
                                 </div> : <this.RenderExistingBox/>
                             }
                         </div>
@@ -74,6 +152,7 @@ class QuestionBox extends React.Component<{question?: question, questionOptions?
         )   
     }
 }
+
 
 
 interface BallotTemplateState {
@@ -86,8 +165,8 @@ export default class BallotTemplate extends React.Component<any,BallotTemplateSt
     constructor(props: any) {
         super(props);
         this.state = {
-            questions: [],//[{questionId: 1, text:"Are you gay"}],
-            options: {},//{1: [{optionId: 1, text: "potato"}, {optionId: 2, text: "tomato"}]},
+            questions: [], //[{questionId: 1, text:"Are you gay"}],
+            options: {}, //{1: [{optionId: 1, text: "potato"}, {optionId: 2, text: "tomato"}]},
         }
 
         this.RecordedQuestions = this.RecordedQuestions.bind(this);   
@@ -96,9 +175,17 @@ export default class BallotTemplate extends React.Component<any,BallotTemplateSt
 
     public questionAdded() {
         let newIdx = this.state.questions.length + 1;
-        let temp = this.state.questions;
-        temp.push({questionId: newIdx, text: ''});
-        this.setState({questions: temp});
+        let temp_options = this.state.options;
+        temp_options[newIdx] = []; 
+        this.setState({questions: [...this.state.questions, {questionId: newIdx, text: ''} ],
+                        options: temp_options});
+    }
+
+    public optionAdded(qId: number) {
+        let newIdx = this.state.options[qId].length + 1;
+        let temp_options = this.state.options;
+        temp_options[qId] = [...temp_options[qId], {optionId: newIdx, text: ''}]
+        this.setState({options: temp_options});
     }
 
     public setQuestion(txt: string, qId: number ) {
@@ -112,6 +199,12 @@ export default class BallotTemplate extends React.Component<any,BallotTemplateSt
         this.setState({questions: questionsCopy});
     }
     
+    //TODO: CHANGE EXISITNG OPTION
+    public setOption(txt: string, oId: number ) {
+
+
+    }
+    
     public RecordedQuestions(){
         return (
             <div className = 'col-12'>
@@ -123,7 +216,9 @@ export default class BallotTemplate extends React.Component<any,BallotTemplateSt
                                 question = {elem} 
                                 questionOptions= {this.state.options[elem.questionId]}
                                 questionAdded = {() => this.questionAdded()}
-                                questionTextChanged = { (txt: string) => this.setQuestion(txt, elem.questionId) }/>
+                                questionTextChanged = { (txt: string) => this.setQuestion(txt, elem.questionId) }
+                                optionAdded = { (qId: number) => {this.optionAdded(qId)} }
+                                optionChanged = { (optionId: number, txt: string) => this.setOption(txt, optionId) } />
                                 
                         );
                     })
@@ -149,60 +244,3 @@ export default class BallotTemplate extends React.Component<any,BallotTemplateSt
     }
 
 }
-
-
-
-
-
-/*
-public RenderOptions(props: {qId: number}){
-
-        let deleteOption = (id: number) => {
-            let newOptions = this.state.options;
-            delete newOptions[id];
-            this.setState({options: newOptions});
-        }
-
-        return (
-            <div>
-            {
-                this.state.options[props.qId].map((questionOption: option, idx:number) => {
-                    if (idx != this.state.options[props.qId].length-1) {
-                        return (
-                            <div className = 'row'> 
-                                <div className = 'col-2'>
-                                    <div style = {{textAlign: 'right'}}><FontAwesomeIcon icon={faChevronRight} /></div>
-                                </div>
-                                <div className = 'col-10'>
-                                    <div className = 'row'>
-                                        <div className = 'col'>
-                                            <p className = 'ballot-text-style-md'>{`${questionOption.text}`}</p>
-                                        </div>
-                                        <div className = 'col-1 ballot-text-style-md'
-                                            onClick = {() => deleteOption(questionOption.optionId)}>
-                                            <FontAwesomeIcon icon={faTimesCircle}/>
-                                        </div>     
-                                    </div>
-                                </div>
-                            </div>
-                        )
-                    } else {
-                        return (
-                            <div className = 'row'> 
-                                <div className = 'col-2'><div style = {{textAlign: 'right'}}><FontAwesomeIcon icon={faPlusCircle} /></div></div>
-                                <p className = 'col-10 ballot-text-style-sm'/>
-                            </div>
-                        )
-                    }
-                })
-            }
-            </div>
-        )
-    }
-
-                    <this.RenderQuestion q = {elem}/>
-                    {
-                        elem.questionId in this.state.options ? <this.RenderOptions qId = {elem.questionId}/>: <div/>
-                                            
-                    }
-*/
