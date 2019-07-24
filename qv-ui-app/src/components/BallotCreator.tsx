@@ -6,7 +6,6 @@ import './ballot-creator.css';
 import TextInput from './TextInput';
 import { faPlusCircle, faTimesCircle} from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { element } from 'prop-types';
 
 
 //TODO make this page not work if all query parameters aren't set correctly
@@ -27,7 +26,7 @@ class QuestionBox extends React.Component<{question?: question, questionOptions?
                                              questionAdded?: () => void
                                              questionTextChanged?: (txt: string) => void
                                              optionAdded?: (qId: number) => void
-                                             optionChanged?: (optionId: number, txt: string) => void}> {
+                                             optionChanged?: (questionId: number, optionId: number, txt: string) => void}> {
 
 
     constructor(props: any) {
@@ -66,7 +65,7 @@ class QuestionBox extends React.Component<{question?: question, questionOptions?
 
         let handleChange = (event: any) => {
             // @ts-ignore
-            this.props.optionTextChanged(this.option.optionId, event.target.value);
+            this.props.optionChanged(this.props.question.questionId, props.option.optionId, event.target.value);
         }
 
 
@@ -101,7 +100,7 @@ class QuestionBox extends React.Component<{question?: question, questionOptions?
         //@ts-ignore
         let optionsCopy = [...this.props.questionOptions];
         let numOptions = optionsCopy.length;
-        let rangeArr = (numOptions % 2 == 0)? [...Array(numOptions + 2)]:
+        let rangeArr = (numOptions % 2 === 0)? [...Array(numOptions + 2)]:
                     [...Array(numOptions + 1)]
 
         let optionColumns = this.organizeComponents(rangeArr, optionsCopy);
@@ -199,9 +198,15 @@ export default class BallotTemplate extends React.Component<any,BallotTemplateSt
         this.setState({questions: questionsCopy});
     }
     
-    //TODO: CHANGE EXISITNG OPTION
-    public setOption(txt: string, oId: number ) {
-
+    public setOption(txt: string, oId: number, qId: number ) {
+        let optionsCopy = this.state.options;
+        for (let i = 0; i < optionsCopy[qId].length; i++) {
+            if (optionsCopy[qId][i].optionId === oId) {
+                optionsCopy[qId][i].text = txt;
+                break;
+            }
+        }
+        this.setState({options: optionsCopy});
 
     }
     
@@ -218,7 +223,7 @@ export default class BallotTemplate extends React.Component<any,BallotTemplateSt
                                 questionAdded = {() => this.questionAdded()}
                                 questionTextChanged = { (txt: string) => this.setQuestion(txt, elem.questionId) }
                                 optionAdded = { (qId: number) => {this.optionAdded(qId)} }
-                                optionChanged = { (optionId: number, txt: string) => this.setOption(txt, optionId) } />
+                                optionChanged = { (qId: number, oId: number, txt: string) => this.setOption(txt, oId, qId) } />
                                 
                         );
                     })

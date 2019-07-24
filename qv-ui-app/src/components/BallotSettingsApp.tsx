@@ -2,8 +2,7 @@ import React from 'react';
 import './bootstrap.min.css';
 import { Component } from 'react';
 import './global.css';
-import {Link, Router} from 'react-router-dom';
-import { createBrowserHistory } from 'history';
+import {Link} from 'react-router-dom';
 
 
 interface VotePickerProps {
@@ -67,7 +66,6 @@ export default class BallotSettingsApp extends React.Component<any,BallotPickerS
     }
 
     public Submit() {
-        const history = createBrowserHistory();
         return (
             <div className = 'row'>
                 <div className = 'col'/>
