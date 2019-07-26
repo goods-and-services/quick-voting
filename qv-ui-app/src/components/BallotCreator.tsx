@@ -21,12 +21,12 @@ interface option {
 }
 
 
-
 class QuestionBox extends React.Component<{question?: question, questionOptions?: Array<option>,
                                              questionAdded?: () => void
                                              questionTextChanged?: (txt: string) => void
-                                             optionAdded?: (qId: number) => void
-                                             optionChanged?: (questionId: number, optionId: number, txt: string) => void}> {
+                                             optionAdded?: (orderId:number, qId: number) => void
+                                             optionChanged?: (questionId: number, optionId: number, txt: string) => void
+                                             deleteOption?: (optionId: number, questionId: number)=> void}> {
 
 
     constructor(props: any) {
@@ -41,18 +41,18 @@ class QuestionBox extends React.Component<{question?: question, questionOptions?
         for (let idx = 0; idx < rangeArr.length; idx+=2){
             res.push(
                 
-                <div className = 'row'>
+                <div className = 'row light-padding'>
                 
-                    <this.RenderOption option = {
-                        idx < optionsCopy.length?
-                        optionsCopy[idx]: undefined
-                        }/>
+                    <this.RenderOption 
+                        option = { idx < optionsCopy.length?
+                                    optionsCopy[idx]: undefined}
+                        orderId = {idx}/>
                     
                 
-                    <this.RenderOption option = {
-                        (idx+1) < optionsCopy.length?
-                        optionsCopy[(idx+1)]: undefined
-                        }/>
+                    <this.RenderOption 
+                        option = {(idx+1) < optionsCopy.length?
+                                    optionsCopy[(idx+1)]: undefined}
+                        orderId = {idx+1}/>
                 </div>
                 
             )
@@ -61,7 +61,7 @@ class QuestionBox extends React.Component<{question?: question, questionOptions?
     }
 
 
-    public RenderOption(props: {option?: option}){
+    public RenderOption(props: {option?: option, orderId: number}){
 
         let handleChange = (event: any) => {
             // @ts-ignore
@@ -74,16 +74,25 @@ class QuestionBox extends React.Component<{question?: question, questionOptions?
                 <div className = 'option-box'>
                 {
                     props.option? 
-                        <TextInput id = {props.option.optionId.toString()}
-                        value={props.option.text}
-                        onChange= {handleChange} 
+                        <div className = 'row'>
+                            <div className = 'col-11 input-height-sm'>
+                                <TextInput id = {props.option.optionId.toString()}
+                                value={props.option.text}
+                                onChange= {handleChange} 
+                                //@ts-ignore
+                                label = {"Option Text"} />
+                            </div>
+                            <div className = 'col-1 option-close'
+                                //@ts-ignore
+                                onClick = {() => this.props.deleteOption(props.option.optionId, this.props.question.questionId)}>
+                                <FontAwesomeIcon icon={faTimesCircle}/>
+                            </div>
+                        </div>
+                    : <div className = 'ballot-text-style-md left-text input-height-sm'
                         //@ts-ignore
-                        label = {"Option Text"} />
-                    : <div className = 'ballot-text-style-md left-text'
-                        //@ts-ignore
-                        onClick = {() => this.props.optionAdded(this.props.question.questionId)}>
+                        onClick = {() => this.props.optionAdded(props.orderId,this.props.question.questionId)}>
                         <FontAwesomeIcon icon={faPlusCircle}/>
-                </div>
+                    </div>
                 }
                 </div>
             </div>
@@ -110,12 +119,16 @@ class QuestionBox extends React.Component<{question?: question, questionOptions?
                 <div className = 'row'>
                     <div className = 'col'>
                     {
-                        //@ts-ignore
-                        <TextInput id = {this.props.question.questionId.toString()}
-                                    value={this.props.question? this.props.question.text.toString(): ''}
-                                    onChange= {handleChange} 
-                                    //@ts-ignore
-                                    label = {"Topic Text"} />
+                        <div className = 'input-height-lg'>
+                            {
+                            //@ts-ignore
+                            <TextInput id = {this.props.question.questionId.toString()}
+                                        value={this.props.question? this.props.question.text.toString(): ''}
+                                        onChange= {handleChange} 
+                                        //@ts-ignore
+                                        label = {"Topic Text"} />
+                            }
+                        </div>
                     }
                     </div>
                 </div>
@@ -180,11 +193,24 @@ export default class BallotTemplate extends React.Component<any,BallotTemplateSt
                         options: temp_options});
     }
 
-    public optionAdded(qId: number) {
+    public optionAdded(orderId: number, qId: number) {
         let newIdx = this.state.options[qId].length + 1;
         let temp_options = this.state.options;
-        temp_options[qId] = [...temp_options[qId], {optionId: newIdx, text: ''}]
+        temp_options[qId][orderId] = {optionId: newIdx, text: ''}
         this.setState({options: temp_options});
+    }
+
+    public deleteOption(oId: number, qId: number){
+        let optionsCopy = this.state.options;
+        for (let i = 0; i < optionsCopy[qId].length; i++) {
+
+            if (optionsCopy[qId][i] && optionsCopy[qId][i].optionId === oId) {
+                // @ts-ignore
+                optionsCopy[qId][i] = undefined ;
+                break;
+            }
+        }
+        this.setState({options: optionsCopy});
     }
 
     public setQuestion(txt: string, qId: number ) {
@@ -201,13 +227,13 @@ export default class BallotTemplate extends React.Component<any,BallotTemplateSt
     public setOption(txt: string, oId: number, qId: number ) {
         let optionsCopy = this.state.options;
         for (let i = 0; i < optionsCopy[qId].length; i++) {
-            if (optionsCopy[qId][i].optionId === oId) {
+
+            if (optionsCopy[qId][i] && optionsCopy[qId][i].optionId === oId) {
                 optionsCopy[qId][i].text = txt;
                 break;
             }
         }
         this.setState({options: optionsCopy});
-
     }
     
     public RecordedQuestions(){
@@ -222,9 +248,9 @@ export default class BallotTemplate extends React.Component<any,BallotTemplateSt
                                 questionOptions= {this.state.options[elem.questionId]}
                                 questionAdded = {() => this.questionAdded()}
                                 questionTextChanged = { (txt: string) => this.setQuestion(txt, elem.questionId) }
-                                optionAdded = { (qId: number) => {this.optionAdded(qId)} }
-                                optionChanged = { (qId: number, oId: number, txt: string) => this.setOption(txt, oId, qId) } />
-                                
+                                optionAdded = { (orderId: number, qId: number) => {this.optionAdded(orderId, qId)} }
+                                optionChanged = { (qId: number, oId: number, txt: string) => this.setOption(txt, oId, qId) } 
+                                deleteOption = {(oId: number, qId: number) => this.deleteOption(oId, qId)}/> 
                         );
                     })
                 }

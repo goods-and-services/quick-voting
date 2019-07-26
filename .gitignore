@@ -16,7 +16,8 @@
 main.exe
 
 */*.d.ts
-
+*/src/.DS_Store
+*/src/components/.DS_Store
 # misc
 */.DS_Store
 */.env.local

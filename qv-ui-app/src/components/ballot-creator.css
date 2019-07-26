@@ -22,11 +22,33 @@
     font-family: Roboto;
 }
 
+.input-height-lg {
+    height: 56px;
+}
+
+.input-height-sm {
+    height: 35px;
+}
+
 .ballot-elem {
     min-height: 30vh;
     border-bottom: 5px solid black;
 }
 
+.light-padding {
+    padding-top: 10px;
+}
+
+.option-close {
+    color: grey;
+    padding-top: 3px;
+    padding-left: 0px;
+}
+
+.option-close:hover {
+    color: black;
+
+}
 
 .inline-block {
     display: inline-block;
