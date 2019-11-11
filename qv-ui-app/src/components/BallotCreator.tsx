@@ -177,8 +177,8 @@ export default class BallotTemplate extends React.Component<any,BallotTemplateSt
     constructor(props: any) {
         super(props);
         this.state = {
-            questions: [], //[{questionId: 1, text:"Are you gay"}],
-            options: {}, //{1: [{optionId: 1, text: "potato"}, {optionId: 2, text: "tomato"}]},
+            questions: [], 
+            options: {}, 
         }
 
         this.RecordedQuestions = this.RecordedQuestions.bind(this);   

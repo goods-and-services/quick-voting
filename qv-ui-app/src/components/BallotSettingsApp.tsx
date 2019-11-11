@@ -4,28 +4,9 @@ import { Component } from 'react';
 import './global.css';
 import './BallotSettingsApp.css';
 import {Link} from 'react-router-dom';
-import { faArrowAltCircleLeft} from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import Slider from '@material-ui/core/Slider';
-import { makeStyles } from '@material-ui/core/styles';
+import {Settings} from './Settings';
 
-const useStyles = makeStyles(theme => ({
-    root: {
-      width: 500,
-    },
-    margin: {
-      height: theme.spacing(3),
-    },
-  }));
 
-interface SettingsProps {
-    goBack(): void,
-    voteType: string,
-    labels: Array<string>,
-    callbacks:Array<(changedVal: any) => void>,
-    inputType:Array<string>,
-    initialValues: Array<any>,
-}
 
 interface VotePickerProps {
     chosen?: String,
@@ -41,10 +22,6 @@ interface BallotPickerState {
     chosenEnd?: string,
     returnMail?: string
 }
-
-
-
-
 
 class VoteTypePicker extends Component<VotePickerProps> {
 
@@ -78,102 +55,32 @@ class VoteTypePicker extends Component<VotePickerProps> {
     }
 }
 
-
-
-
-
-
-class Settings extends Component<SettingsProps> {
-    constructor(props: any) {
-        super(props);
-    }
-
-    CreditSlider(label: string, value: number, onChange:(event: object, val:any) => void ){
-        return(
-            <div>
-                <div>
-                    {label}}
-                </div>
-                <div className={useStyles().margin}>
-                    <Slider
-                        defaultValue={value}
-                        aria-labelledby="discrete-slider-small-steps"
-                        step={10}
-                        onChange={onChange}
-                        marks
-                        min={1}
-                        max={400}
-                        valueLabelDisplay="auto"
-                    />
-                </div>
-            </div>
-        )
-    }
-
-
-    getNextElement(inputType: string, label: string, initialValue: any, callback: (val:any)=>void) {
-        let content = undefined
-
-        if (inputType == 'slider'){
-            content = this.CreditSlider(label, initialValue, (obj: object, val: number)=>{callback(val)})
-        } //TODO: add else block
-
-        return (
-            <div className='row'>
-                <div className='col'/>
-                <div className='col'>
-                    {content}
-                </div>
-                <div className='col'/>
-            </div>
-
-        )
-    }
-
-    render() {
-        return (
-            <div className = 'col'>
-                <div className='row'>
-                    <div className="col-2">
-                        <div className="global-text-style-lg">
-                            <span className='back-choose'
-                                onClick={this.props.goBack}>
-                                <FontAwesomeIcon icon={faArrowAltCircleLeft}/>
-                            </span>
-                        </div>
-                    </div>
-                    <div className="col-10"/>
-                </div>
-                {
-                    this.props.inputType.map((elem: string, i: number) => {
-                        return this.getNextElement(elem, this.props.labels[i], 
-                            this.props.initialValues[i], this.props.callbacks[i]);
-                    })
-                }
-            </div>
-        )
-    }
-
-}
-
-
-
 export default class BallotSettingsApp extends React.Component<any,BallotPickerState> {
     constructor(props: any) {
         super(props);
         this.state={
             chosenVote: undefined,
-            returnMail: undefined,
-            chosenEnd: undefined,
-            numberCredits: undefined
+            returnMail: "",
+            chosenEnd: "",
+            numberCredits: 100
         }
         this.Submit = this.Submit.bind(this);
     }
 
     public Submit() {
+
+        const locationDescriptor = {
+            pathname: `/${this.state.chosenVote}`,
+            search: `?email=${this.state.returnMail}&numberCredits=${this.state.numberCredits}&enddate=${this.state.chosenEnd}`
+        }
+
         return (
             <div className = 'col'>
-                    <button className = 'menu-button'><Link to= {`/${this.state.chosenVote}`}>Submit</Link></button>
+                    <button className = 'menu-button'>
+                        <Link to={locationDescriptor} >
+                            Submit
+                        </Link>
+                    </button>
             </div>
         );
 
@@ -195,16 +102,16 @@ export default class BallotSettingsApp extends React.Component<any,BallotPickerS
             content = 
                 <div className='container-fluid'>
                     <div className='row'>
-                        
                         <Settings 
                             voteType={this.state.chosenVote}
                             goBack={() => this.setState({chosenVote: undefined})}
-                            labels={["Number of Credits: "]}
-                            callbacks={[(val)=>{this.setState({numberCredits: val})}]}
-                            inputType={["slider"]}
-                            initialValues={[100]}
+                            labels={["Number of Credits: ", "Email Callback:", "End Date:"]}
+                            callbacks={[(val)=>{this.setState({numberCredits: val})}, 
+                                (val)=>{this.setState({returnMail: val})},
+                                (val)=>{this.setState({chosenEnd: val})}]}
+                            inputType={["slider", "input", "input"]}
+                            initialValues={[100, this.state.returnMail,this.state.chosenEnd]}
                             />
-                        
                     </div>
                     <div className='row' style={{marginTop: 10}}>
                         <div className = 'col'/>

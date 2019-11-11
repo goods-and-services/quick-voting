@@ -1,10 +1,9 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
 import './bootstrap.min.css';
 import BallotTemplate from './BallotCreator';
 import BallotSettingsApp from './BallotSettingsApp';
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 
 function Title() {

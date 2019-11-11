@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import './text-input.css';
 
 
@@ -36,7 +35,6 @@ export default class TextInput extends Component<TextInputProps,any> {
       }
 
     onChange = (event: any) => {
-        const { id } = this.props;
         const value = event.target.value;
         this.setState({ value, error: '' });
 
