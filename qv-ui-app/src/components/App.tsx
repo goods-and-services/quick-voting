@@ -28,7 +28,7 @@ function Title() {
 
 function MainMenu() {
   let containerStyle = {
-    marginTop: window.innerHeight * .15,
+    marginTop: window.innerHeight * .10,
   } as React.CSSProperties;
 
   return (
